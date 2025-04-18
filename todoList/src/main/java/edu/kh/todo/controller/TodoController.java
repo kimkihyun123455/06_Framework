@@ -31,16 +31,17 @@ public class TodoController {
 		// 응답 전 : request scope
 		// redirect : session scope 로 이동 -> 사용
 		// 응답까지 끝나고 난 후 : request scope 복귀 
+		// 결과에 따라 message 값 지정
+		String message = null;
 		
-		if(todoTitle == null && todoContent == null) {
-			todoTitle ="공백";
-			todoContent ="공백";
+		
+		if(todoTitle == null || todoContent == null) {
+			message = "제목과 내용을 입력하세요";
+			ra.addFlashAttribute("message", message);
+			return "/";
 		}
 		// 서비스 메서드 호출 후 결과 반환 받기
 		int result = service.addTodo(todoTitle, todoContent);
-		
-		// 결과에 따라 message 값 지정
-		String message = null;
 		
 		if(result > 0) message = "할 일 추가 성공!!!";
 		else		   message = "할 일 추가 실패...";
