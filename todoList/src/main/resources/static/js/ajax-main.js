@@ -194,7 +194,7 @@ const selectTodoList = () => {
         if(key === 'todoTitle'){
           const a = document.createElement("a");
           a.innerText = todo[key];
-          a.href="/ajax/detial?todoNo"+todo.todoNo;
+          a.href="/ajax/detail?todoNo="+todo.todoNo;
           td.append(a);
           tr.append(td);
 
@@ -226,23 +226,184 @@ const selectTodo = (url) => {
   // 매개변수 url == "/ajax/detail?todoNo=..." 형태의 문자열
 
   // fetch 요청 시 url 이용
-  fetch("ajax/selectTodo",{
-    method : "GET", 
-    headers : {"Content-Type" : "application/json"}, // 요청 데이터의 형식을 JSON으로 지정
-    body : JSON.stringify(url)}) // param이라는 JS객체 JSON(string)으로 변환)
-    .then(resp => resp.text())
-    .then(todoList => {
-      popupLayer.style.display = "block";
+  fetch(url)
+  .then(resp => resp.json())
+  .then(todo => {
+    console.log(todo);
 
-      popupTodoNo.innerText = todoList.todoNo;
-      popupTodoTitle.innerText = todoList.todoTitle;
-      popupComplete.innerText = todoList.complete;
-      popupRegDate.innerText = todoList.regDate;
-      popupTodoContent.innerText = todoList.todoContent;
+    // popup layer에 조회된 값을 출력
+    popupTodoNo.innerText = todo.todoNo;
+    popupTodoTitle.innerText = todo.todoTitle;
+    popupComplete.innerText = todo.complete;
+    popupRegDate.innerText = todo.regDate;
+    popupTodoContent.innerText = todo.todoContent;
+
+    // popup layer 보이게 하기
+    popupLayer.classList.remove("popup-hidden");
+
+    // update layer가 열려있따면 숨기기
+    updateLayer.classList.add("popup-hidden");
+
+  });
+}
+
+// popupLayer X 버튼 클릭 시 닫기
+popupClose.addEventListener("click", ()=>{
+  // 숨겨주는 class 추가
+  popupLayer.classList.add("popup-hidden");
+});
+
+// 삭제 버튼 클릭 시
+deleteBtn.addEventListener("click", ()=>{
+  
+  // 취소 클릭 시 해당 함수 종료
+  if(!confirm("정말 삭제하시겠습니까?")){
+    return;
+  }
+  // 삭제할 할 일 번호 얻어오기
+  const todoNo = popupTodoNo.innerText;
+
+  // method 목록 :: get : 조회 / post : 삽입 / delete : 삭제 / put : 수정
+  // 삭제 비동기 요청(DELETE)
+  fetch("/ajax/delete",{
+    method : "DELETE", // delete 방식 요청
+    headers : {"Content-Type" : "application/json"},
+    body : todoNo // todoNo 단입 값 하나는 JSON 형태로 자동 변환되어 전달됨
+    // body : JSON.stringify(todoNo) 형태로 원래 변환 받아야함
+  })
+  .then(resp => resp.text())
+  .then(result =>{
+    console.log(result);
+
+    if(result > 0){// 삭제 성공
+      alert("삭제되었습니다");
+      // 상세조회 팝업레이어 닫기
+      popupLayer.classList.add("popup-hidden");
+
+      // 전체, 완료된 할 일 개수, 할 일 목록 갱신
+      selectTodoList();
+      getTotalCount();
+      getCompleteCount();
+    }else{// 삭제 실패
+      alert("삭제가 실패하셨습니다");
+    }
+
+  });
+
+
+});
+
+// 완료 여부 변경 버튼 클릭 시
+changeComplete.addEventListener("click", ()=>{
+
+  // 변경할 할 일 번호, 완료 여부 (Y <-> N)
+  const todoNo = popupTodoNo.innerText;
+  const complete = popupComplete.innerText === 'Y'?'N':'Y';
+
+  // SQL 수행에 필요한 두 값을 JS 객체로 묶음
+  const obj = {"todoNo" : todoNo, "complete":complete};
+  //          {"todoNo" : 2, "complete" : "Y"}
+
+  // 비동기로 완료여부 변경 요청(PUT 요청 방식)
+  fetch("/ajax/changeComplete", {
+    method : "PUT", // PutMapping
+    headers : {"Content-Type" : "application/json"},
+    body : JSON.stringify(obj)
+  })
+  .then(resp => resp.text())
+  .then(result => {
+
+    if(result > 0){
+      alert("완료여부 변경 성공");
+
+      // update 된 DB 데이터를 다시 조회해서 화면에 출력하면 서버에 부하가 크다
+      // selectTodo();
+
+      // 상세조회에서 Y/N 바꾸기
+      popupComplete.innerText = complete;
+
+      // 완료된 할 일 개수 갱신
+      // getCompleteCount(); 다시 요청하면 서버에 부하
+      // 완료된 Todo 개수 +- 
+      const count = Number(completeCount.innerText)
+      if(complete==='Y') completeCount.innerText = count + 1;
+      else completeCount.innerText = count - 1;
+
+      // 위처럼 서버에 재요청하지 않고 바꾸려면 코드가 길어져 그냥 요청함
+      selectTodoList();
+
+    }else{
+      alert("완료여부 변경 실패");
+    }
+
+  });
+
+});
+
+updateView.addEventListener("click",()=>{
+
+  popupLayer.classList.add("popup-hidden");
+  updateLayer.classList.remove("popup-hidden");
+
+  updateTitle.value = popupTodoTitle.innerText;
+  // HTML 에서는 줄바꿈을 <br>로 인식하여 텍스트창에 다 노출되어 있기때문에
+  // <br>을 textarea에서의 줄바꿈 \n 으로 바꾸고 innerHTML로 실행도 시켜야 제대로 나온다
+  updateContent.value = popupTodoContent.innerHTML.replaceAll("<br>", "\n"); 
+
+  // 수정 레이어 -> 수정 버튼에 data-todo-no 추가
+  updateBtn.setAttribute("data-todo-no", popupTodoNo.innerText);
+
+  
+});
+
+
+
+updateBtn.addEventListener("click", (e)=>{
+  
+  const obj = {"todoNo" : e.target.dataset.todoNo, todoTitle : updateTitle.value, "todoContent" : updateContent.value}
+  
+  fetch("/ajax/update",{
+    method : "PUT",
+    headers : {"Content-Type" : "application/json"},
+    body : JSON.stringify(obj)
+  })
+  .then(resp => resp.text())
+  .then(result => {
+  
+    if(result > 0){
+      selectTodoList();
+      alert("수정이 완료되었습니다");
+      
+      updateLayer.classList.add("popup-hidden");
+      popupLayer.classList.remove("popup-hidden");
+
+      popupTodoTitle.innerText = updateTitle.value;
+      popupTodoContent.innerHTML = updateContent.value.replaceAll("<\n>", "<br>");
+
+      popupLayer.classList.add.remove("popup-hidden");
 
       
-    })
-};
+      updateTitle.value="";
+      updateContent.value="";
+      updateBtn.removeAttribute("date-todo-no"); // 속성 제거
+      
+  
+    }else alert("수정에 실패하였습니다");
+
+  });
+});
+
+updateCancel.addEventListener("click", ()=>{
+
+  updateLayer.classList.add("popup-hidden");
+  popupLayer.classList.remove("popup-hidden");
+
+});
+
+
+
+
+
 
 
 

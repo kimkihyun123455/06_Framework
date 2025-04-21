@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.kh.todo.model.dto.Todo;
@@ -115,11 +118,32 @@ public class AjaxController {
 		// -> HttpMessageConvertor가 JSON 형태로 변환하여 반환
 	}
 	
-	@ResponseBody
-	@GetMapping("selectTodo")
-	public String selectTodo(@RequestBody String url){
+	@ResponseBody // 비동기 요청을 보낸 곳으로 데이터 반환
+	@GetMapping("detail")
+	public Todo selectTodo(@RequestParam("todoNo") int todoNo){
 		
-		return url ;
+		return service.todoDetail(todoNo);
+		// return 자료형 : Todo(dto)
+		// -> HttpMessageConvertor 가 String(JSON)형태로 변환해서 반환
 	}
 	
+	@ResponseBody
+	@DeleteMapping("delete")
+	public int todoDelete(@RequestBody int todoNo) {
+		return service.todoDelete(todoNo);
+	}
+	
+	@ResponseBody
+	@PutMapping("changeComplete")
+	public int changeComplete(@RequestBody Todo todo) {
+		
+		return service.changeComplete(todo);
+	}
+	
+	@ResponseBody
+	@PutMapping("update")
+	public int updateView(@RequestBody Todo todo) {
+		
+		return service.todoUpdate(todo);
+	}
 }
