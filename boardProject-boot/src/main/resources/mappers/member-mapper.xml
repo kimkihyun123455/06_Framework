@@ -12,6 +12,13 @@
 		AND MEMBER_DEL_FL = 'N'
    	</select>
    
+   <!-- 이메일 중복 검사 -->
+   <select id="checkEmail">
+   	SELECT COUNT(*)
+   	FROM "MEMBER"
+   	WHERE MEMBER_EMAIL = #{memberEmail}
+   	AND MEMBER_DEL_FL ='N'
+   </select>
 </mapper>
 
 
