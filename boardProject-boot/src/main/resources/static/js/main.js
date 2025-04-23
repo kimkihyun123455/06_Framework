@@ -51,14 +51,17 @@ if(loginEmail != null) { // 로그인 폼의 이메일 input태그가 화면상�
   }
 }
 
+const loginForm = document.querySelector("#loginForm")
 const loginBtn = document.querySelector("#loginBtn")
 const memberEmail = document.querySelector("[name='memberEmail']")
 const memberPw = document.querySelector("[name='memberPw']")
 
-if(memberEmail == null || memberPw == null){
+loginForm.addEventListener("submit", (e)=>{
 
-  loginBtn.addEventListener("click",()=>{
-    console.log("what");
-  });
+  if(memberEmail.value.trim().length === 0 || memberPw.value.trim().length === 0){
+    alert("아이디 혹은 비밀번호를 입력하세요");
+    e.preventDefault();
+  }
 
-}
+});
+

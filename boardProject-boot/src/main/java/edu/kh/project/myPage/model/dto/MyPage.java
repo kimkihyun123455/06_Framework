@@ -1,4 +1,4 @@
-package edu.kh.project.member.model.dto;
+package edu.kh.project.myPage.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,16 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-
-// DTO(Data Transfer Object)
-// - 데이터 전달용 객체
-// - DB에서 조회된 결과를 담을 용도 또는
-// 	 SQL 구문에 사용할 값을 전달하는 용도로
-//	 관련성 있는 데이터를 한번에 묶어서 다룬다
-public class Member {
+public class MyPage {
 
 	private int	memberNo; 			// 회원 번호
 	private String memberEmail; 	// 회원 이메일
