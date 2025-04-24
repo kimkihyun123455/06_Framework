@@ -1,5 +1,8 @@
 package edu.kh.project.myPage.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.kh.project.member.model.dto.Member;
+import edu.kh.project.myPage.model.dto.UploadFile;
 import edu.kh.project.myPage.model.service.MyPageService;
-import oracle.jdbc.proxy.annotation.Post;
 
 /*
  * @SessionAttributes의 역할
@@ -23,6 +29,7 @@ import oracle.jdbc.proxy.annotation.Post;
  * - Session에 존재하는 값을 Key로 얻어오는 역할
  * */
 
+@SessionAttributes({"loginMember"})
 @Controller
 @RequestMapping("myPage")
 public class MyPageController {
@@ -69,10 +76,6 @@ public class MyPageController {
 	@GetMapping("fileTest")
 	public String fileTest() {
 		return "myPage/myPage-fileTest";
-	}
-	@GetMapping("fileList")
-	public String fileList() {
-		return "myPage/myPage-fileList";
 	}
 	
 	/** 회원 정보 수정
@@ -121,4 +124,162 @@ public class MyPageController {
 		
 		return "redirect:info";
 	}
+	
+	/** 비밀번호 변경
+	 * @param paramMap : 모든 파라미터(요청 데이터)를 맵으로 저장
+	 * @param loginMember : Session에 저장된 현재 로그인된 회원 정보
+	 * @param ra
+	 * @return
+	 */
+	@PostMapping("changePw")
+	public String changePw(@RequestParam Map<String, String> paramMap,
+						   @SessionAttribute("loginMember") Member loginMember,
+						   RedirectAttributes ra) {
+		// paramMap = {currentPw = asd123, newPw = pass02!, newPwConfirm = pass02!}
+		
+		// 로그인한 회원 번호
+		int memberNo = loginMember.getMemberNo();
+		
+		// 비밀번호 관련 정보 + 회원 번호 전달
+		int result = service.changePw(paramMap, memberNo);
+		
+		String path = null;
+		String message = null;
+		
+		if(result > 0) { // 비밀번호 변경 성공
+			
+			message = "비밀번호가 변경되었습니다";
+			path = "/myPage/info";
+			
+		}else { // 실패
+			
+			message = "현재 비밀번호가 일치하지 않습니다";
+			path = "/myPage/changePw";
+			
+		}
+		
+		ra.addFlashAttribute("message",message);
+		
+		return "redirect:" + path;
+	}
+	
+	/** 회원 탈퇴
+	 * @param memberPw : 입력 받은 비밀번호
+	 * @param loginMember : session에 저장되어 있는 회원정보
+	 * @param status : 세션을 완료 용도의 객체 -> @SessionAttributes로 등록된 세션 완료
+	 * @return
+	 */
+	@PostMapping("secession")
+	public String secession(@RequestParam("memberPw") String memberPw,
+							@SessionAttribute("loginMember") Member loginMember,
+							RedirectAttributes ra,
+							SessionStatus status) {
+		
+		// 로그인한 회원의 회원번호 꺼내기
+		int memberNo = loginMember.getMemberNo();
+		
+		// 서비스 호출
+		int result = service.secession(memberPw, memberNo);
+		
+		String message = null;
+		String path = null;
+		
+		if(result > 0) {
+			
+			message = "회원 탈퇴가 완료되었습니다";
+			path = "/";
+			
+			status.setComplete();
+		}else {
+			
+			message = "비밀번호가 일치하지 않습니다";
+			path = "secession";
+			
+		}
+		
+		ra.addFlashAttribute("message", message);
+		
+		// 탈퇴 성공 -> redirect:/ (메인페이지) 
+		// 탈퇴 실패 -> redirect:secession (상대경로)
+		// 			-> /myPage/secession (현재 경로 POST)
+		// 			-> /myPage/secession (GET)
+		
+		return "redirect:"+path;
+	}
+	
+	/*
+	 * Spring에서 파일 업로드를 처리하는 바업ㅂ 
+	 * 
+	 * - encType = "multipart/form-data"로 클라이언트 요청을 받으면
+	 *    (문자, 숫자, 파일 등이 섞여있는 요청)
+	 *    
+	 *   이를 MultipartResolver를 이용해서 섞여있는 파라미터를 분리 
+	 * 
+	 * 	 문자열 숫자 -> String
+	 *	 파일 -> MultipartFile 
+	 *
+	 * 
+	 * */
+	
+	@PostMapping("file/test1")
+	public String fileUpload1(@RequestParam("uploadFile") MultipartFile uploadFile,
+							  RedirectAttributes ra) throws Exception{
+		
+		String path = service.fileUpload1(uploadFile);
+		// 웹에서 접근할 수 있는 경로 반환
+		// path = /myPage/file/A.png
+		
+		// 파일이 저장되어 웹이서 접근할 수 있는 경로가 반환되었을 때
+		if( path != null) {
+			ra.addFlashAttribute("path", path);
+		}
+		
+		
+		return "redirect:/myPage/fileTest";
+	}
+	
+	/** 업로드한 이미지 파일 DB 저장 + 서버 저장 + 조회
+	 * @param uploadFile
+	 * @param loginMember
+	 * @param ra
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("file/test2")
+	public String fileUpload2(@RequestParam("uploadFile") MultipartFile uploadFile,
+							  @SessionAttribute("loginMember") Member loginMember,
+							  RedirectAttributes ra) throws Exception{
+		
+		// 로그인한 회원의 번호 얻어오기
+		int memberNo = loginMember.getMemberNo();
+		
+		// 업로드된 파일 정보를 DB에 INSERT 후 결과 행의 개수 반환
+		int result = service.fileUpload2(uploadFile, memberNo);
+		
+		String message = null;
+		
+		if(result > 0) {
+			message = "파일 업로드 성공";
+		}else {
+			message = "파일 업로드 실패";
+		}
+		
+		ra.addFlashAttribute("message",message);
+		
+		return "redirect:/myPage/fileTest";
+	}
+	
+	@GetMapping("fileList")
+	public String fileList(Model model, @SessionAttribute("loginMember") Member loginMember) {
+		
+		// 파일 목록 조회 서비스 호출 (현재 로그인한 회원이 올린 이미지만 조회)
+		int memberNo = loginMember.getMemberNo();
+		List<UploadFile> list = service.fileList(memberNo);
+		
+		// model에 list 담아서 forward
+		model.addAttribute("list", list);
+		
+		return "myPage/myPage-fileList";
+	}
+	
 }

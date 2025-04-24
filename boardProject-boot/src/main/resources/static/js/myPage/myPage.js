@@ -25,9 +25,9 @@ function execDaumPostcode() {
     }).open();
   }
   
-  // 주소 검색 버튼 클릭 시(myPage-info.html 외에도 문제가 발생하지 않도록 작성)
+  // 정보 수정 주소창 띄우기
   const searchAddress = document.querySelector("#searchAddress");
-  if(searchAddress != null) { // 화면상에 id가 searchAddress인 요소가 존재하는 경우에만
+  if(searchAddress != null) { 
    searchAddress.addEventListener("click", execDaumPostcode);
   }
   
@@ -146,6 +146,7 @@ function execDaumPostcode() {
   // 비밀번호 변경 form 태그
   const changePw = document.querySelector("#changePw");
   
+  // 현재 페이지에서 changePw 요소가 존재할 때
   if (changePw != null) {
     // 제출 되었을 때
     changePw.addEventListener("submit", e => {
