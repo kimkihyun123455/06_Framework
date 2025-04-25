@@ -170,4 +170,11 @@ public class MemberController {
 		return "redirect:"+path;
 	}
 	
+	@GetMapping("findIdPw")
+	public String findPage() {
+		return "member/findIdPw";
+	}
+	
+	
+	
 }
