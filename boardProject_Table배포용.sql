@@ -373,7 +373,7 @@ INSERT INTO "BOARD_TYPE" VALUES(SEQ_BOARD_CODE.NEXTVAL, '자유 게시판');
 
 COMMIT;
 
-SELECT * FROM "BOARD";
+SELECT * FROM "MEMBER";
 
 ---------------------------------------------
 /* 게시글 번호 시퀀스 생성 */
@@ -424,16 +424,19 @@ BEGIN
 			SEQ_COMMENT_NO.NEXTVAL,
 			SEQ_COMMENT_NO.CURRVAL || '번째 댓글 입니다',
 			DEFAULT, DEFAULT,
-			CEIL( DBMS_RANDOM.VALUE(0, 2000) ),
+			CEIL( DBMS_RANDOM.VALUE(10, 2004) ),
 			2,
 			NULL
 		);
 	END LOOP;
 END;
 
+
+
 COMMIT;
 
-SELECT COUNT(*) FROM "COMMENT";
+SELECT * FROM "BOARD"
+ORDER BY BOARD_NO DESC;
 
 
 -- 특정 게시판(BOARD_CODE)에 삭제되지 않은 게시글 목록 조회
@@ -483,23 +486,23 @@ CREATE SEQUENCE SEQ_IMG_NO NOCACHE;
 
 /* BOARD_IMG 테이블에 샘플 데이터 삽입 */
 INSERT INTO "BOARD_IMG" VALUES(
-	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본1.jpg', 'test1.jpg', 0, 1999
+	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본1.jpg', 'test1.jpg', 0, 2000
 );
 
 INSERT INTO "BOARD_IMG" VALUES(
-	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본2.jpg', 'test2.jpg', 1, 1999
+	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본2.jpg', 'test2.jpg', 1, 2000
 );
 
 INSERT INTO "BOARD_IMG" VALUES(
-	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본3.jpg', 'test3.jpg', 2, 1999
+	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본3.jpg', 'test3.jpg', 2, 2000
 );
 
 INSERT INTO "BOARD_IMG" VALUES(
-	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본4.jpg', 'test4.jpg', 3, 1999
+	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본4.jpg', 'test4.jpg', 3, 2000
 );
 
 INSERT INTO "BOARD_IMG" VALUES(
-	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본5.jpg', 'test5.jpg', 4, 1999
+	SEQ_IMG_NO.NEXTVAL, '/images/board/', '원본5.jpg', 'test5.jpg', 4, 2000
 );
 
 
