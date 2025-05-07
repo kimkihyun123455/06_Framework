@@ -22,6 +22,7 @@ public class BoardServiceImpl implements BoardService{
 	@Autowired
 	private BoardMapper mapper;
 	
+
 	
 	@Override
 	public List<Map<String, Object>> selectBoardTypeList() {

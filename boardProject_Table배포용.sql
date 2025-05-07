@@ -607,7 +607,6 @@ CONNECT BY PRIOR COMMENT_NO = PARENT_COMMENT_NO
 ORDER SIBLINGS BY COMMENT_NO
 ;
 
-
 ------------------------------------------------------------------------------
 -- 댓글 샘플데이터
 INSERT INTO "COMMENT"	
