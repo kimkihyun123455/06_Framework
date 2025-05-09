@@ -4,12 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{app.name}">messages.properties 값 출력</title>
+  
+  <script src='/js/index.global.js'></script>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          locale: 'ko',
+          initialView: 'dayGridMonth',
+          editable:true,
+          events:[{
+            title: '달력 출력해보기',
+            start:'2025-05-09T09:00:00',
+            end:'2025-05-13T00:00:00',
+            display:'block',
+            overlap:false,
+            backgroundColor:'green'
+          }]
+        });
+        calendar.render();
+      });
+
+    </script>
 
   <!-- templates/common/common.html 조각으로 추가 -->
   <th:block th:replace="~{common/common}"></th:block>
 </head>
 <body>
-
+  
   <main>
 
     <!-- common/header.html 을 조각으로 추가 -->
@@ -17,8 +40,10 @@
 
     <!-- 메인 페이지 내용  -->
     <section class="content">
+      
     
       <section class="content-1">
+        <div id='calendar'></div>
 		<!-- 비동기 보충 시 사용 영역 -->
 	  </section>
 
@@ -102,6 +127,7 @@
       </section>
 
     </section>
+
   </main>
 
   <!-- common/footer 추가-->

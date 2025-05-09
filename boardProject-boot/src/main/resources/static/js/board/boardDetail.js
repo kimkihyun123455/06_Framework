@@ -73,16 +73,68 @@ if(updateBtn != null){
     location.href = location.pathname.replace('board','editBoard')
                    + "/update"
                    + location.search;
-
-
-
-
-
-
-
   })
 }
 
 
+// 삭제(GET) 
+const deleteBtn = document.querySelector("#deleteBtn");
 
+if(deleteBtn != null){
+  deleteBtn.addEventListener("click", () => {
+    if( !confirm("삭제 하시겠습니까get?")){
+      alert("취소되었습니다");
+      return;
+    }
 
+    const url = location.pathname.replace("board","editBoard")+"/delete";
+    // 현재 : /board/1/2004?cp=1
+    // 목표 : /editBoard/1/2004/delete?cp=1
+
+    const queryString = location.search; // ?cp=1
+    location.href = url + queryString; // GET 방식 동기식 요청
+
+  })
+}
+
+// 삭제(POST)
+const deleteBtn2 = document.querySelector("#deleteBtn2");
+
+if(deleteBtn2 != null){
+  deleteBtn2.addEventListener("click", () => {
+
+    if(!confirm("삭제 하시겠습니까?post")){
+      alert("취소되었습니다");
+      return;
+    }
+
+    const url = location.pathname.replace("board", "editBoard") + "/delete";
+    // 목표 : /editBoard/1/2004/delete?cp=1
+
+    // JS에서 동기식으로 Post 요청 보내는 법법
+    // -> form 태그 생성
+    const form = document.createElement("form");
+    form.action = url;
+    form.method = "POST";
+
+    // 쿼리스트링으로 값을 보내는 것은 GET방식
+    // POST 방식은 name 속성값으로 전송해야함
+    // cp 값을 저장할 input 태그 생성
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "cp";
+
+    // 쿼리스트링에서 원하는 파라미터 얻어오기
+    const params = new URLSearchParams(location.search);
+    // cp=1
+    const cp = params.get("cp"); // 1
+    input.value = cp;
+
+    form.append(input);
+
+    // 화면에 form 태그 추가 후 제출하기
+    document.querySelector("body").append(form);
+    form.submit();
+
+  })
+}
