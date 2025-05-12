@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -76,7 +78,13 @@ public class EditBoardController {
 		 *  + List 요소의 index 번호 == IMG_ORDER 와 같음
 		 * */
 		
-		// 1. boardCode, 로그인한 회우너번호(memberNo)를 inputBoard에 세팅
+		String textContent = inputBoard.getBoardContent();
+		Document doc = Jsoup.parse(textContent);
+		doc.select("p").remove();
+		
+		
+		
+		// 1. boardCode, 로그인한 회원번호(memberNo)를 inputBoard에 세팅
 		inputBoard.setBoardCode(boardCode);
 		inputBoard.setMemberNo(loginMember.getMemberNo());
 		// -> inputBoard에는 총 4가지 값이 세팅됨 => boardTitle, boardContent, boardCode, memberNo
@@ -101,6 +109,8 @@ public class EditBoardController {
 		}
 		
 		ra.addFlashAttribute("message", message);
+		
+		log.info("이게 뭐야 : "+textContent);
 		
 		return "redirect:"+path;
 	}

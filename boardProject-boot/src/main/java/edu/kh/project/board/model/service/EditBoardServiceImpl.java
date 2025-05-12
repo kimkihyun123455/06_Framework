@@ -49,7 +49,7 @@ public class EditBoardServiceImpl implements EditBoardService {
 		
 		// 삽입 성공 시
 		// 삽입된 게시글의 번호를 변수로 저장
-		// mapper.xml에서 <selectKey> 태그를 이욯새ㅓ 생성된
+		// mapper.xml에서 <selectKey> 태그를 이용해서 생성된
 		// boardNo가 inputBoard에 저장된 상태 == 얕은 복사된 상태
 		int boardNo = inputBoard.getBoardNo();
 		
