@@ -692,7 +692,8 @@ WHERE PROFILE_IMG IS NOT NULL
 UNION
 SELECT CAST(IMG_RENAME AS VARCHAR2(300)) "rename" FROM "BOARD_IMG";
 
-
+SELECT * FROM "BOARD"
+WHERE BOARD_CODE
 
 ----------------------------------------------------------
 /* 채팅 */
