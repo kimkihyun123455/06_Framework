@@ -48,15 +48,15 @@ WHERE MEMBER_NO = '3';
 -- 샘플 회원 데이터 삽입
 INSERT INTO "MEMBER"
 VALUES(SEQ_MEMBER_NO.NEXTVAL, 
-			 'user01@kh.or.kr',
-			 'pass01!',
-			 '유저일',
+			 'admin01@kh.or.kr',
+			 '$2a$10$HkLSDTKqVs42fkh6/LPR3uHHQI16lMv1V/5xlOjgrLy2LQwbYgvFW',
+			 '관리자',
 			 '01012341234',
 			 NULL,
 			 NULL,
 			 DEFAULT,
 			 DEFAULT,
-			 DEFAULT
+			 '2'
 );
 
 UPDATE "MEMBER" SET
