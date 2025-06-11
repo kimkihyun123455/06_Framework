@@ -101,7 +101,7 @@ public class AjaxController {
 		// @RequestParam은 일반적으로 쿼리파라미터나 URL 파라미터에 사용
 		
 		// 할 일 추가 서비스 호출 후 응답
-		int result = service.addTodo(todo.getTodoTitle(), todo.getTodoContent());
+		int result = service.addTodo(todo.getTodoTitle(), todo.getTodoDetail());
 		
 		return result;
 	}

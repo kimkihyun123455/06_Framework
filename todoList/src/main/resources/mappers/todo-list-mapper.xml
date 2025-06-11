@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.kh.todo.todoList.model.mapper.TodoListMapper">
+
+<!-- todoList 정보 가져오기 -->   
+<select id="getTodoList">
+	SELECT TODO_NO, TODO_TITLE, TODO_DETAIL, COMPLETE, TO_CHAR(REG_DATE, 'YYYY.MM.DD') AS REG_DATE FROM TB_TODO
+	ORDER BY TODO_NO
+</select>   
+
+<!-- 완료 여부 업데이트 -->
+<update id="changeComplete">
+	UPDATE "TB_TODO" SET
+	COMPLETE = #{complete}
+	WHERE TODO_NO = #{todoNo}
+</update>   
+
+<!-- todo 추가 -->
+<insert id="addTodo">
+	INSERT INTO "TB_TODO"
+	VALUES(SEQ_TODO_NO.NEXTVAL, #{todoTitle}, #{todoDetail}, DEFAULT, DEFAULT)
+</insert>
+
+<!-- todo 제거 -->
+<delete id="deleteTodo">
+	DELETE "TB_TODO"
+	WHERE TODO_NO = #{todoNo}
+</delete>
+
+</mapper>
